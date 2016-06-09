@@ -1,0 +1,27 @@
+﻿<Window x:Class="SearchApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SearchApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel>
+            <Label Content="Path to search" />
+            <TextBox x:Name="pathToSearch" Text="C:\" />
+            <Label Content="FileName" />
+            <TextBox x:Name="fileName" Text="*.txt"/>
+            <Button Content="Search" Click="Button_Click" x:Name="searchButton" />
+            <Button Content="Stop" Click="stopButton_Click" Visibility="Collapsed" x:Name="stopButton" />
+            <ProgressBar IsIndeterminate="True" x:Name="progress" Visibility="Collapsed"></ProgressBar>
+        </StackPanel>
+
+        <ListBox x:Name="results" Grid.Column="1" ItemsSource="{Binding Items}" />
+    </Grid>
+</Window>
