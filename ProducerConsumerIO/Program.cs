@@ -52,6 +52,7 @@ namespace ProducerConsumer
 
     class CPUTaskDispatcher : BaseDispatcher
     {
+        EventWaitHandle _wh = new AutoResetEvent(false);
         Action<object> _action;
         ConcurrentQueue<object> queue;
         /// <summary>
@@ -73,8 +74,13 @@ namespace ProducerConsumer
                     object outObject;
                     if (queue.TryDequeue(out outObject))
                     {
-                        ThreadPool.QueueUserWorkItem((e) => _action(outObject));
+                        _action(outObject);
+                        //ThreadPool.QueueUserWorkItem((e) => _action(outObject));
                         //new Thread(() => _action(outObject)).Start();
+                    }
+                    else
+                    {
+                        _wh.WaitOne();
                     }
                 }
             }
@@ -88,6 +94,7 @@ namespace ProducerConsumer
         public override void OnReceived(object msg)
         {
             queue.Enqueue(msg);
+            _wh.Set();
         }
     }
 
@@ -96,17 +103,17 @@ namespace ProducerConsumer
         static void Main(string[] args)
         {
             ConcurrentEnv env = new ConcurrentEnv();
-            env.Start<IOTaskDispatcher, IOProcessor>(5);
-            Console.ReadLine();
+            //env.Start<IOTaskDispatcher, IOProcessor>(5);
+            //Console.ReadLine();
 
-            env.Start<IOTaskDispatcher, IOProcessor>(10);
-            Console.ReadLine();
+            //env.Start<IOTaskDispatcher, IOProcessor>(10);
+            //Console.ReadLine();
 
-            env.Start<IOTaskDispatcher, IOProcessor>(100);
-            Console.ReadLine();
+            //env.Start<IOTaskDispatcher, IOProcessor>(100);
+            //Console.ReadLine();
 
-            env.Start<CPUTaskDispatcher, CPUProcessor>(5);
-            Console.ReadLine();
+            //env.Start<CPUTaskDispatcher, CPUProcessor>(5);
+            //Console.ReadLine();
 
             env.Start<CPUTaskDispatcher, CPUProcessor>(10);
             Console.ReadLine();
