@@ -11,7 +11,7 @@ namespace ThreadSafeCollections
         public override T Dequeue()
         {
             lock (listLock)
-            {                
+            {
                 return queue.Dequeue();
             }
         }
@@ -26,7 +26,13 @@ namespace ThreadSafeCollections
 
         public override int Count
         {
-            get { return queue.Count; }
+            get
+            {
+                lock (listLock)
+                {
+                    return queue.Count;
+                }
+            }
         }
     }
 }

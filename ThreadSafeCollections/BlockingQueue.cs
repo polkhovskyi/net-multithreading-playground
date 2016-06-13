@@ -33,7 +33,13 @@ namespace ThreadSafeCollections
 
         public override int Count
         {
-            get { return queue.Count; }
+            get
+            {
+                lock (listLock)
+                {
+                    return queue.Count;
+                }
+            }
         }
     }
 }

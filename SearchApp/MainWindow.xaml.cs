@@ -30,6 +30,7 @@ namespace SearchApp
             
             vm = new VM();
             this.DataContext = vm;
+            vm.SearchEnded += SearchEnded;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -43,9 +44,7 @@ namespace SearchApp
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             vm.CancelAsync();
-            stopButton.Visibility = Visibility.Collapsed;
-            searchButton.IsEnabled = true;
-            progress.Visibility = Visibility.Collapsed;
+            SearchEnded();
         }
 
         private void RunSearch()
@@ -53,6 +52,13 @@ namespace SearchApp
             vm.SearchPath = pathToSearch.Text;
             vm.FileName = fileName.Text;
             vm.RunSearch();
+        }
+
+        private void SearchEnded()
+        {
+            stopButton.Visibility = Visibility.Collapsed;
+            searchButton.IsEnabled = true;
+            progress.Visibility = Visibility.Collapsed;
         }
     }
 }

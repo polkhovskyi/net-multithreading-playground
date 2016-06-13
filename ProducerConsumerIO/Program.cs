@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProducerConsumer
 {
@@ -23,9 +24,9 @@ namespace ProducerConsumer
 
         private void Run()
         {
-            while(true)
+            while (true)
             {
-                if(queue.Count > 0)
+                if (queue.Count > 0)
                 {
                     object outObject;
                     if (queue.TryDequeue(out outObject))
@@ -53,13 +54,16 @@ namespace ProducerConsumer
     class CPUTaskDispatcher : BaseDispatcher
     {
         EventWaitHandle _wh = new AutoResetEvent(false);
+        EventWaitHandle _threadResetEvent = new ManualResetEvent(false);
         Action<object> _action;
         ConcurrentQueue<object> queue;
+        static long counter;
         /// <summary>
         /// Called before recieving messages, can execute for any time
         /// </summary>
         public override void Initialize(Action<object> action)
         {
+            counter = 0;
             _action = action;
             queue = new ConcurrentQueue<object>();
             new Thread(() => Run()).Start();
@@ -72,11 +76,28 @@ namespace ProducerConsumer
                 if (queue.Count > 0)
                 {
                     object outObject;
-                    if (queue.TryDequeue(out outObject))
+                    if (queue.TryPeek(out outObject))
                     {
-                        _action(outObject);
-                        //ThreadPool.QueueUserWorkItem((e) => _action(outObject));
-                        //new Thread(() => _action(outObject)).Start();
+                        //_action(outObject);
+                        //ThreadPool.QueueUserWorkItem((e) => _action(outObject));                            
+
+                        if (Interlocked.Read(ref counter) < Environment.ProcessorCount)
+                        {
+                            if (queue.TryDequeue(out outObject))
+                            {
+                                Interlocked.Increment(ref counter);
+                                new Thread(() =>
+                                {
+                                    _action(outObject);
+                                    Interlocked.Decrement(ref counter);
+                                    _threadResetEvent.Set();
+                                }).Start();
+                            }
+                        }
+                        else
+                        {                            
+                            _threadResetEvent.WaitOne();
+                        }
                     }
                     else
                     {

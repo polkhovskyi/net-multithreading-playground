@@ -17,6 +17,7 @@ namespace SearchApp
     {
         BackgroundWorker _backgroundWorker;
         ObservableCollection<string> _items = new ObservableCollection<string>();
+        internal Action SearchEnded;
 
         public VM()
         {
@@ -24,6 +25,12 @@ namespace SearchApp
             _backgroundWorker = new BackgroundWorker();
             _backgroundWorker.WorkerSupportsCancellation = true;
             _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+            _backgroundWorker.RunWorkerCompleted += _backgroundWorker_RunWorkerCompleted;
+        }
+
+        private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SearchEnded?.Invoke();
         }
 
         private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -77,6 +84,11 @@ namespace SearchApp
 
         public bool Search(string folder, Action<string> fileAction)
         {
+            if (!Directory.Exists(folder))
+            {
+                return true;
+            }
+
             foreach (string file in Directory.GetFiles(folder, FileName))
             {
                 if (_backgroundWorker.CancellationPending == true)
@@ -93,7 +105,15 @@ namespace SearchApp
                 }
                 try
                 {
-                    Search(subDir, fileAction);
+                    var res = Search(subDir, fileAction);
+                    if(res)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        var t = 4;
+                    }
                 }
                 catch
                 {

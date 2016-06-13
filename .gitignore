@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/MultithreadingTasks/v14
+/LazySingleton/obj/Debug
+/Deadlocks/obj/Debug
+/CountPrimes/obj/Debug
+/ProducerConsumerIO/bin/Debug
+/SearchApp/obj/Debug
+/SearchApp/bin/Debug
+/ProducerConsumerIO/obj/Debug
+/ThreadSafeCollections/obj/Debug
