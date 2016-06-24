@@ -88,6 +88,7 @@ namespace ProducerConsumer
                                 Interlocked.Increment(ref counter);
                                 new Thread(() =>
                                 {
+                                    ExecutionContext.SuppressFlow();
                                     _action(outObject);
                                     Interlocked.Decrement(ref counter);
                                     _threadResetEvent.Set();
